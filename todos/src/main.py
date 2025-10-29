@@ -24,3 +24,10 @@ todo_data = {
     },
 }
 
+@app.get("/todos")
+def get_todos_handler(order: str | None = None):
+    ret = list(todo_data.values())
+    if order and order == "DESC":
+        return ret[::-1]
+    return ret
+
