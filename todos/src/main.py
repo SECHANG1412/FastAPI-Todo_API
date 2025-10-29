@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Body
 from pydantic import BaseModel
 
 app = FastAPI()
@@ -48,10 +48,20 @@ def create_todos_handler(request: CreateToDoRequest):
     return todo_data[request.id]
 
 
+@app.patch("/todos/{todo_id}")
+def update_todos_handler(
+        todo_id: int,
+        is_done: bool = Body(..., embed=True),
+):
+    todo = todo_data.get(todo_id)
+    if todo:
+        todo["is_done"] = is_done
+        return todo
+    return {}
 
 
-
-
-
-
+@app.delete("/todos/{todo_id}")
+def delete_todos_handler(todo_id: int):
+    todo_data.pop(todo_id, None)
+    return todo_data
 
