@@ -1,4 +1,10 @@
-todos/
+﻿# Ignore everything inside todos/
+todos/*
+
+# But keep the src folder inside todos/
+!todos/src/
+!todos/src/**
+
 __pycache__/
 .idea/
 .vscode/
