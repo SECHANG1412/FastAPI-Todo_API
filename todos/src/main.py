@@ -5,38 +5,13 @@ from schema.response import ToDoListSchema, ToDoSchema
 from sqlalchemy.orm import Session
 from typing import List
 from database.orm import ToDo
-from database.repository import get_todos
-from database.repository import get_todo_by_todo_id
-from database.repository import create_todo
-from database.repository import update_todo
-from database.repository import delete_todo
+from database.repository import get_todos, get_todo_by_todo_id,create_todo,update_todo,delete_todo
 
 app = FastAPI()
 
 @app.get("/")
 def health_check_handler():
     return {"ping": "pong"}
-
-todo_data = {
-    1: {
-        "id": 1,
-        "contents": "실전! FastAPI 섹션 0 수강",
-        "is_done": True,
-    },
-    2: {
-        "id": 2,
-        "contents": "실전! FastAPI 섹션 1 수강",
-        "is_done": False,
-    },
-    3: {
-        "id": 3,
-        "contents": "실전! FastAPI 섹션 2 수강",
-        "is_done": False,
-    },
-}
-
-
-
 
 
 @app.get("/todos", status_code=200)
@@ -54,10 +29,6 @@ def get_todos_handler(
     )
 
 
-
-
-
-
 @app.get("/todos/{todo_id}", status_code=200)
 def get_todo_handler(
         todo_id: int,
@@ -69,9 +40,6 @@ def get_todo_handler(
     raise HTTPException(status_code=404, detail="ToDo Not Found")
 
 
-
-
-
 @app.post("/todos", status_code=201)
 def create_todos_handler(
         request: CreateToDoRequest,
@@ -81,10 +49,6 @@ def create_todos_handler(
     todo : ToDo = create_todo(session=session, todo=todo)
 
     return ToDoSchema.from_orm(todo)
-
-
-
-
 
 
 @app.patch("/todos/{todo_id}", status_code=200)
@@ -101,10 +65,6 @@ def update_todos_handler(
     raise HTTPException(status_code=404, detail="ToDo Not Found")
 
 
-
-
-
-
 @app.delete("/todos/{todo_id}", status_code=204)
 def delete_todos_handler(
         todo_id: int,
@@ -115,5 +75,3 @@ def delete_todos_handler(
         raise HTTPException(status_code=404, detail="ToDo Not Found")
 
     delete_todo(session=session, todo_id=todo_id)
-
-
