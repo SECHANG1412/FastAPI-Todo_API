@@ -7,6 +7,7 @@ from typing import List
 from database.orm import ToDo
 from database.repository import get_todos
 from database.repository import get_todo_by_todo_id
+from database.repository import create_todo
 
 app = FastAPI()
 
@@ -70,9 +71,14 @@ def get_todo_handler(
 
 
 @app.post("/todos", status_code=201)
-def create_todos_handler(request: CreateToDoRequest):
-    todo_data[request.id] = request.dict()
-    return todo_data[request.id]
+def create_todos_handler(
+        request: CreateToDoRequest,
+        session: Session = Depends(get_db),
+) -> ToDoSchema:
+    todo : ToDo = ToDo.create(request=request)
+    todo : ToDo = create_todo(session=session, todo=todo)
+
+    return ToDoSchema.from_orm(todo)
 
 
 
