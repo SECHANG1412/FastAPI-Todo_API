@@ -9,6 +9,7 @@ from database.repository import get_todos
 from database.repository import get_todo_by_todo_id
 from database.repository import create_todo
 from database.repository import update_todo
+from database.repository import delete_todo
 
 app = FastAPI()
 
@@ -105,10 +106,14 @@ def update_todos_handler(
 
 
 @app.delete("/todos/{todo_id}", status_code=204)
-def delete_todos_handler(todo_id: int):
-    todo = todo_data.pop(todo_id, None)
-    if todo:
-        return
-    raise HTTPException(status_code=404, detail="ToDo Not Found")
+def delete_todos_handler(
+        todo_id: int,
+        session: Session = Depends(get_db)
+):
+    todo: ToDo | None = get_todo_by_todo_id(session=session, todo_id=todo_id)
+    if not todo:
+        raise HTTPException(status_code=404, detail="ToDo Not Found")
+
+    delete_todo(session=session, todo_id=todo_id)
 
 
