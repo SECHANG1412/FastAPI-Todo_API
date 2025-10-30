@@ -8,6 +8,7 @@ from database.orm import ToDo
 from database.repository import get_todos
 from database.repository import get_todo_by_todo_id
 from database.repository import create_todo
+from database.repository import update_todo
 
 app = FastAPI()
 
@@ -89,11 +90,13 @@ def create_todos_handler(
 def update_todos_handler(
         todo_id: int,
         is_done: bool = Body(..., embed=True),
+        session: Session = Depends(get_db),
 ):
-    todo = todo_data.get(todo_id)
+    todo: ToDo | None = get_todo_by_todo_id(session=session, todo_id=todo_id)
     if todo:
-        todo["is_done"] = is_done
-        return todo
+        todo.done() if is_done else todo.undone()
+        todo: ToDo = update_todo(session=session, todo=todo)
+        return ToDoSchema.from_orm(todo)
     raise HTTPException(status_code=404, detail="ToDo Not Found")
 
 
