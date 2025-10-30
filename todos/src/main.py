@@ -1,7 +1,7 @@
 from database.connection import get_db
 from fastapi import FastAPI, Body, HTTPException, Depends
-from pydantic import BaseModel
-from schema.response import ListToDoResponse, ToDoSchema
+from schema.request import CreateToDoRequest
+from schema.response import ToDoListSchema, ToDoSchema
 from sqlalchemy.orm import Session
 from typing import List
 from database.orm import ToDo
@@ -40,13 +40,13 @@ todo_data = {
 def get_todos_handler(
         order: str | None = None,
         session: Session = Depends(get_db)
-) -> ListToDoResponse:
+) -> ToDoListSchema:
     todos: List[ToDo] = get_todos(session=session)
     if order and order == "DESC":
-        return ListToDoResponse(
+        return ToDoListSchema(
             todos=[ToDoSchema.from_orm(todo) for todo in todos[::-1]]
         )
-    return ListToDoResponse(
+    return ToDoListSchema(
         todos=[ToDoSchema.from_orm(todo) for todo in todos]
     )
 
@@ -64,16 +64,6 @@ def get_todo_handler(
     if todo:
         return ToDoSchema.from_orm(todo)
     raise HTTPException(status_code=404, detail="ToDo Not Found")
-
-
-
-
-
-
-class CreateToDoRequest(BaseModel):
-    id: int
-    contents: str
-    is_done: bool
 
 
 
